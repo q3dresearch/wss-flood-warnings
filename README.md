@@ -46,6 +46,11 @@ since 2017 is already gone.
 | Warning no longer in force | 313 |
 | Severe Flood Warning | 6 |
 
+**Was this worth capturing?** Tested before the capture ran, against the Internet
+Archive's own 55 mementos and using this repo's parser — see
+[examples/research-questions.md](examples/research-questions.md). Three of the five
+questions this data is for cannot be answered from the archive at all.
+
 ## The question this repo is built to answer
 
 This register is unusual in having **both** a terminal status and a deletion,
@@ -125,6 +130,8 @@ the robots evaluation.
 | `raw/`, `manifest/` | captured bytes and the append-only capture log |
 | `derived/observations/` | long-format CSV, one row per metric per area per capture |
 | `examples/queries.sql` | the five questions this data was captured to answer |
+| `examples/research-questions.md` | the backfill test: what the archive can and cannot answer |
+| `examples/artifacts/` | the four figures behind that test, and the scripts that build them |
 
 Derive runs weekly, so `derived/` lags the raw captures. The raw is hourly and
 committed hourly; run `wss derive` locally for anything fresher.
