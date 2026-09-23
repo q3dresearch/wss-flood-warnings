@@ -1,0 +1,2 @@
+source_id,first_success_at,last_success_at,last_attempt_at,consecutive_failures,consecutive_throttled,expected_interval_h,staleness_h,gate_fail_rate_28d,attempts_28d,status
+ea.flood.warnings,2026-09-23T14:38:03Z,2026-09-23T14:38:03Z,2026-09-23T14:38:03Z,0,0,1,0.0,0.000,1,active

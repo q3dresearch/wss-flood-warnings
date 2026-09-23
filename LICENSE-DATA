@@ -1,0 +1,45 @@
+# Licence of the captured data
+
+**Open Government Licence v3.0 (OGL-UK-3.0).**
+
+Unlike most sources in this fleet, this one needs no interpretation. Every
+response from the Environment Agency's flood-monitoring API states the grant in
+the payload itself:
+
+    "meta" : {
+      "publisher" : "Environment Agency" ,
+      "licence" : "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" ,
+      ...
+
+The OGL v3 permits copying, publishing, distributing, adapting and commercially
+exploiting the information, provided the source is acknowledged. The required
+acknowledgement is carried in every derived artifact and is:
+
+    Contains public sector information licensed under the Open Government
+    Licence v3.0. Source: Environment Agency flood-monitoring API.
+
+## What this licence covers, and what it does not
+
+It covers the **flood warning records** -- the data this repo captures. It does
+not purport to license the Environment Agency's trade marks or logos, which the
+OGL explicitly excludes, and none are reproduced here.
+
+## Crawl permission is a separate question, and was checked separately
+
+A licence to reuse data is not permission to fetch it. Checked 2026-09-23:
+`environment.data.gov.uk/robots.txt` returns 200 with a real robots file
+carrying `Disallow: /pubutil/`, `Disallow: /doc/`, `Disallow: /data/` and
+`Disallow: /bng/api/`. The captured path is `/flood-monitoring/id/floods`,
+which matches none of them -- robots path rules are anchored at the start of
+the path, so `Disallow: /doc/` closes `/doc/...` and not
+`/flood-monitoring/doc/...`. Evaluated with `webprobes/robots.py` on longest
+match, never a substring test. No named-agent refusal is present.
+
+The sibling host `check-for-flooding.service.gov.uk` serves
+`User-agent: * / Allow: /` and answers an honest 404 on a nonsense path.
+
+## Provenance of these statements
+
+Both the licence assertion and the robots evaluation were read from the live
+services on 2026-09-23 and are restated here rather than assumed. If either
+changes, this file is wrong until someone re-reads them.

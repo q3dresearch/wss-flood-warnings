@@ -1,0 +1,120 @@
+# THIS WORKFLOW DELIBERATELY DIVERGES FROM THE FLEET TEMPLATE, TWICE.
+#
+# 1. It is hourly, and the fleet floor is weekly. The justification is in
+#    registry/ea.flood.warnings.yml and it is not transferable: the publisher
+#    documents that a warning is removed about 24 hours after it is raised, so
+#    a weekly reading would catch roughly one flood event in seven. Do not copy
+#    this cron to a source that cannot show the same thing.
+#
+# 2. It is ONE job, not plan -> sharded capture -> artifact -> commit. That
+#    three-stage dance exists to fan 3,000 endpoints across 20 runners and
+#    survive a partial failure. This repo has ONE source and ONE endpoint, and
+#    it runs 24 times a day: the shard machinery would spend three jobs and an
+#    artifact round-trip per run to parallelise a single 2-second fetch. The
+#    stages it drops are the ones that only mean something with a matrix.
+name: capture-hourly
+
+on:
+  schedule:
+    - cron: "25 * * * *" # off the hour -- GitHub's scheduler is contended at :00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # cancel-in-progress stays FALSE. A run that is cancelled mid-capture is a
+  # missed hour, and a missed hour on this source is data that no longer exists
+  # anywhere. Queueing a late run behind a slow one is always the better trade.
+  group: fleet-commits
+  cancel-in-progress: false
+
+env:
+  WSS_CONTACT: ${{ secrets.WSS_CONTACT || format('{0} +https://github.com/{1}', github.repository_owner, github.repository) }}
+  # MUST match the registry's `cadence:`. A mismatch makes `wss plan` return []
+  # and the capture silently does nothing while the workflow stays green.
+  CADENCE: hourly
+  ENGINE_SPEC: "wss[object] @ git+https://github.com/${{ github.repository_owner }}/wss-engine.git@v0.6.56"
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install engine
+        run: pip install "$ENGINE_SPEC"
+      - name: Validate registry (hard gate)
+        run: wss validate
+
+      # Assign, never `echo "count=$(wss plan ...)"`: command substitution
+      # inside echo yields *echo's* exit status, so a failing plan reports
+      # success -- which is how an empty matrix stayed green elsewhere.
+      - name: Confirm the source is actually planned at this cadence
+        id: plan
+        run: |
+          count=$(wss plan --cadence "$CADENCE" --shards 1 --count)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          if [ "$count" -lt 1 ]; then
+            echo "plan returned $count sources at cadence $CADENCE -- refusing to report success" >&2
+            exit 1
+          fi
+
+      # "1/1" -- the shard spec is ONE-BASED and needs both halves. `--shard 0`
+      # and `--shard 0/1` are both rejected, the first as malformed and the
+      # second as out of range, which is what `wss plan --shards 1` emits:
+      # ["1/1"]. The fleet template never hardcodes this because its matrix
+      # comes straight from plan; this single-job workflow does, so it is
+      # written out rather than guessed.
+      - name: Capture
+        run: wss capture --cadence "$CADENCE" --shard 1/1
+
+      - name: Drop quarantine (triage lives in CI artifacts, never in git)
+        if: always()
+        run: |
+          if [ -d quarantine ]; then
+            tar -czf quarantine.tgz quarantine && rm -rf quarantine
+          fi
+      - name: Upload quarantine if anything was rejected
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: quarantine-${{ github.run_id }}
+          path: quarantine.tgz
+          if-no-files-found: ignore
+          retention-days: 90
+
+      # Records what was attempted, not just that the cron fired. A heartbeat
+      # that proves liveness only let two repos write a perfect one every run
+      # while capturing nothing.
+      - name: Heartbeat
+        run: |
+          mkdir -p state
+          printf '{"cadence":"%s","sources_planned":%s,"completed_at":"%s","run_id":"%s","workflow":"%s"}\n' \
+            "$CADENCE" "${{ steps.plan.outputs.count }}" "$(date -u +%FT%TZ)" \
+            "${{ github.run_id }}" "${{ github.workflow }}" \
+            > state/last_run.json
+
+      - name: Commit with rebase-retry
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A raw manifest state
+          if git diff --cached --quiet; then
+            echo "nothing to commit -- an unchanged hour is the normal case here"
+            exit 0
+          fi
+          git commit -m "capture($CADENCE): run ${{ github.run_id }}"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            sleep $((i * 5))
+            if ! git pull --rebase; then
+              git rebase --abort || true
+              echo "rebase conflict on attempt $i -- not a push race" >&2
+            fi
+          done
+          echo "push failed after 5 attempts" >&2
+          exit 1

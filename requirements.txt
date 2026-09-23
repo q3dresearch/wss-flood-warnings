@@ -1,0 +1,9 @@
+# This repo pins one engine version; the workflows install the same pin
+# (resolving the owner as ${{ github.repository_owner }}). For local
+# development against a sibling checkout: pip install -e ../wss
+#
+# v0.6.56 is the FLOOR for this repo, not a preference: it is the first
+# version whose CADENCE_HOURS contains "hourly", and this repo's only source
+# declares it. Any earlier engine rejects registry/ea.flood.warnings.yml at
+# `wss validate` with "cadence must be one of weekly, monthly, quarterly".
+wss[object] @ git+https://github.com/q3dresearch/wss-engine.git@v0.6.56

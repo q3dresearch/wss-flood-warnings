@@ -1,0 +1,9 @@
+{
+  "cadence": "hourly",
+  "completed_at": "2026-09-23T14:38:07Z",
+  "outcomes": {
+    "first_capture": 1
+  },
+  "shard": "1/1",
+  "sources": 1
+}

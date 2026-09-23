@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this dataset, please cite it."
+type: dataset
+title: "UK Flood Warnings, captured hourly (wss-flood-warnings)"
+abstract: >-
+  Hourly point-in-time captures of every live flood alert and warning issued by
+  the Environment Agency for England. The publisher documents that a warning is
+  set to severity 4, "Warning no longer in force", approximately 24 hours after
+  it is raised, and that the record is then removed altogether; the agency's own
+  archive contains daily measurement readings only and no warnings at all. The
+  Internet Archive holds 57 captures of the warnings endpoint across 2017-2026,
+  against a 24-hour turnover, so the great majority of flood events since 2017
+  are not recoverable from anywhere. Each capture records severity, the flood
+  area, county, river or sea, the EA operational area and region, tidal status,
+  and the times the warning was raised and last changed.
+authors:
+  - name: "q3dresearch"
+    website: "https://github.com/q3dresearch"
+license: OGL-UK-3.0
+keywords:
+  - git-scraping
+  - open-data
+  - point-in-time-data
+  - dataset
+  - flooding
+  - environment-agency
+  - united-kingdom

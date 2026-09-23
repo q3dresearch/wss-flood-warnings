@@ -1,0 +1,124 @@
+source_id: ea.flood.warnings
+status: active
+cadence: hourly
+schema_id: floodwarning.v1
+
+publisher: Environment Agency
+publisher_tier: first_party
+
+# PROVEN, NOT INFERRED. Every other source in this fleet carries a suspected
+# deletion; this one carries a deletion the publisher DOCUMENTS, in its own
+# API reference at /flood-monitoring/doc/reference:
+#
+#   "approximately 24 hours after a warning has been in place for a flood
+#    area, the severity level will be set to 4, 'Warning no Longer in Force',
+#    before the warning response is removed altogether."
+#
+# So there IS a terminal status AND a deletion, in that order, about a day
+# apart. See notes -- the gap between them is this repo's central question.
+destroys_own_history: true
+
+# A REAL GRANT, STATED IN THE PAYLOAD ITSELF. Every response carries
+# meta.licence = "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/".
+# That is the Open Government Licence v3: reuse, adaptation and redistribution
+# permitted with attribution. This is one of the few sources in the fleet where
+# the grant is machine-readable and needs no interpretation. See LICENSE-DATA.
+licence: "OGL-UK-3.0, asserted by the publisher in meta.licence on every response (checked 2026-09-23)."
+
+# Flood areas, rivers, counties and EA operational regions. No named individuals
+# in any of the 13 fields; `message` is the EA's public advice text about an
+# area, not about a person.
+personal_data: none
+storage: git
+
+notes: >-
+  Live UK flood alerts and warnings from the Environment Agency, captured
+  hourly because the publisher deletes them after about a day.
+
+  WHY THIS IS HOURLY AND ALMOST NOTHING ELSE IS. The fleet's floor is weekly
+  and the engine enforced it until 2026-09-23. It was relaxed for this source
+  and the reasoning is worth keeping, because it is the test any future hourly
+  source has to pass: the publisher documents a deletion window of ~24 hours,
+  which is shorter than the sampling interval by a factor of seven. A weekly
+  reading of a register that empties daily is not a coarse sample, it is a
+  lottery -- it would catch roughly one flood event in seven and report success
+  on the other six. Compare wss-gho or wss-carbon-registry, where a state
+  persists for months and weekly buys nothing over monthly.
+
+  THE CENTRAL QUESTION, WHICH NOBODY CAN CURRENTLY ANSWER. This register is
+  unusual in having BOTH a terminal status and a deletion. severityLevel 4
+  ("Warning no longer in force") is set first; the row is removed some time
+  after. How long is that second window? The publisher does not say, and
+  nothing in the archive can tell you, because answering it needs consecutive
+  observations closer together than the window itself. Hourly capture measures
+  it directly: the number of consecutive captures in which a given floodAreaID
+  is present at severityLevel 4 IS the answer. That is a fact about how a
+  public warning system retires its records, and it is not recoverable later.
+
+  THE ARCHIVE DOES NOT COVER THIS, AND HERE IS THE NUMBER. The Internet
+  Archive holds 57 distinct captures of
+  /flood-monitoring/id/floods across 2017-2026 -- one per 61 days against a
+  24-hour turnover -- distributed 2017:11, 2018:18, 2019:13, 2020:1, 2021:3,
+  2024:2, 2025:6, 2026:3. There are three captures in the whole of 2026. The
+  sibling ?min-severity=3 view has 15. So essentially every flood event since
+  2017 has already been lost, and the ones the Archive did catch are luck
+  rather than coverage. This is the thinnest archive coverage measured against
+  any source in this fleet; for contrast, Apple's App Store Review Guidelines
+  carry ~1,950.
+
+  WHAT A BUSY DAY LOOKS LIKE. The single largest memento, 2020-02-17 (Storm
+  Dennis), is 1,096,729 bytes and 760 items: 6 Severe Flood Warnings, 193
+  Flood Warnings, 248 Flood Alerts and 313 already marked "Warning no longer
+  in force". That last number is the point -- more than 40% of a storm-day
+  payload is the terminal state, and all of it is deleted within about a day.
+
+  A QUIET HOUR IS 703 BYTES AND items: [], AND THAT IS REAL DATA. Checked
+  2026-09-23: zero active warnings nationally. Two fetches three seconds apart
+  were BYTE-IDENTICAL, so the payload carries no nonce, no served-at stamp and
+  no rotating id -- dedupe works on this source with no dedupe_ignore at all,
+  and an unchanged hour costs nothing but a manifest line. That is what makes
+  hourly affordable. It also means an empty response must never be treated as
+  a failed fetch: silence here is a measurement that no part of England is
+  flooding, which is most hours of most years.
+
+  WHICH IS WHY max_shrink_pct IS 100. A storm payload is 1.1 MB and the hour
+  after the last warning is withdrawn it is 703 bytes -- a 99.94% shrink that
+  is completely correct and happens after every flood event. Any shrink gate
+  tight enough to be meaningful would quarantine precisely the captures that
+  record a flood ENDING, which is the signal. The floor that actually protects
+  this source is min_bytes plus must_contain: an error page or a truncated
+  response fails those, and a real empty register passes them.
+
+  PARSED BY parsers/floodwarning_v1.py, keyed on floodAreaID -- the identifier
+  that resolves to a published flood-area polygon and is therefore what anything
+  outside this register can join on. The numeric warning id from @id is carried
+  as a metric instead, so a SECOND flood at the same area is visible as a
+  changed warning_id rather than being silently merged into the first. All
+  three candidate keys were checked for uniqueness on the 760-item storm
+  payload: floodAreaID, @id and (floodAreaID, timeRaised) are each 760 distinct
+  over 760 rows.
+
+endpoints:
+  # One endpoint, deliberately. /id/floods returns EVERY active record
+  # including the severityLevel 4 ones, so the ?min-severity=N views are strict
+  # subsets of this response and capturing them would store the same bytes
+  # twice. The ?county= and ?lat/long views are likewise filters over this set.
+  - url: "https://environment.data.gov.uk/flood-monitoring/id/floods"
+    delay_seconds: 2
+    timeout_seconds: 60
+
+gates:
+  expect_status: 200
+  # An empty register is 703 bytes of context and metadata. 600 leaves room for
+  # the publisher trimming whitespace without admitting a truncated response.
+  min_bytes: 600
+  content_type_any: [json]
+  # meta.publisher and the JSON-LD context, both present on an EMPTY response.
+  # Nothing here may reference a flood field: items: [] is the normal state.
+  must_contain:
+    - "Environment Agency"
+    - "flood-monitoring/meta/context.jsonld"
+  must_not_contain: ["Access Denied", "Too Many Requests", "Service Unavailable"]
+  # 100 = never fires. See notes: the shrink from a storm to a quiet hour is
+  # ~99.94% and is the signal, not a fault.
+  max_shrink_pct: 100
