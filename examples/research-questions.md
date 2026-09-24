@@ -108,7 +108,7 @@ isolated frames, not sequences.
 
 ## Not tested here
 
-The demand this was found against (`demand/needs.csv` p01) is *"where did damage just
+The demand this was found against (`apideas/data/02-questions/needs.csv` p01) is *"where did damage just
 happen at scale, and how soon will the claims land?"* — which needs flood warnings joined
 to a claims or restoration-demand series. **No such join has been attempted and no key
 overlap has been measured.** Until it is, the predictive claim is a hypothesis, not a

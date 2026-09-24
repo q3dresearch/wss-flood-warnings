@@ -25,7 +25,7 @@ then **"the warning response is removed altogether"**.
 
 ![The archive samples this register every 31 days. It deletes every 24 hours.](examples/charts/coverage-gap.svg)
 
-**Nobody else is holding this.** The Internet Archive has 57 captures of the
+**Nobody else is holding this.** The Internet Archive has 55 captures of the
 warnings endpoint across 2017–2026 — one per 61 days against a 24-hour turnover,
 and three in all of 2026. The EA's own archive holds 22 files, every one
 `readings-*.csv`: river levels and rainfall, no warnings of any kind.
@@ -67,8 +67,8 @@ questions this data is for cannot be answered from the archive at all.
 
 | # | Question | Status |
 | --- | --- | --- |
-| Q1 | Does the Internet Archive already track this register? | **answered — no.** Median gap between captures is 742 h against a 24 h deletion window; 4 of 54 gaps fall inside it |
-| Q2 | How long does a stood-down warning survive before it is deleted? | needs hourly captures. **This is the whole reason for capturing** — the archive bounds it for only 46 of 860 warnings (5.3%) |
+| Q1 | Does the Internet Archive already track this register? | **answered — no.** Median gap between captures is 743 h against a 24 h deletion window; 3 of 54 gaps fall inside it — and one of those 3 is **11 seconds**, a double-capture rather than a second look at the register |
+| Q2 | How long does a stood-down warning survive before it is deleted? | needs hourly captures. **This is the whole reason for capturing** — the archive bounds it for only 52 of 860 warnings (6.0%) |
 | Q3 | Do the same areas flood repeatedly? | **answered as a floor** — 524 of 1,156 areas show more than one event, one of them 12 times |
 | Q4 | Can a single reading stand for a week or a month? | **answered — no.** The register held 0 to 760 warnings across 55 captures, median 6 |
 | Q5 | Can a warning's escalation path be reconstructed from the archive? | **answered — no.** 86.4% of warnings appear in exactly one capture |
@@ -81,10 +81,10 @@ questions this data is for cannot be answered from the archive at all.
 start** — the backfill test, run against the archive's own 55 mementos using this
 repo's parser, asking whether this capture is needed at all.
 
-![Of 860 warnings seen standing down, 46 were seen there twice](examples/charts/deletion-window.svg)
+![Of 860 warnings seen standing down, 52 were seen there twice](examples/charts/deletion-window.svg)
 
 **Q2, drawn.** One mark per warning observed at severityLevel 4. The window is
-bounded for the 46 in colour and unknown for the other 814.
+bounded for the 52 in colour and unknown for the other 808.
 
 ## Using it
 

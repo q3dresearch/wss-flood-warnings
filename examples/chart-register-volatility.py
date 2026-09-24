@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """How many warnings were in force at each archived capture."""
 import json, math, pathlib, sys
+import pathlib
 from datetime import datetime
 import plate
 from plate import INK, INK2, MUTED, GRID, RULE, FAINT
@@ -12,7 +13,14 @@ ZERO   = "#b4472e"
 
 def main():
     here = pathlib.Path(__file__).resolve()
-    st = json.load(open(sys.argv[1]))
+    # Defaults to the committed artifact. These scripts took a MANDATORY argv[1]
+    # naming a stats file that was never committed, built from a memento dir in
+    # /tmp. /tmp was cleared, so four published figures could not be rebuilt by
+    # anyone -- and plateaudit/determinism could not run them either.
+    src = (sys.argv[1] if len(sys.argv) > 1 else
+           str(sorted((pathlib.Path(__file__).resolve().parents[1] / "public")
+                      .glob("backfill-*.json"))[-1]))
+    st = json.load(open(src))
     caps = [(datetime.fromisoformat(c["ts"]), c["n"]) for c in st["captures"]]
     caps.sort()
     zeros = sum(1 for _, n in caps if n == 0)

@@ -11,3 +11,6 @@ quarantine/
 __pycache__/
 *.pyc
 .venv/
+.cache/
+__pycache__/
+*.pyc

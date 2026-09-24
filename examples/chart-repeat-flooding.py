@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """How many separate flood events each area shows, even under 31-day sampling."""
 import json, pathlib, sys
+import pathlib
 import plate
 from plate import INK, INK2, MUTED, GRID, FAINT, RULE
 
@@ -10,7 +11,14 @@ SERIES = "#2f6f5e"
 
 def main():
     here = pathlib.Path(__file__).resolve()
-    st = json.load(open(sys.argv[1]))
+    # Defaults to the committed artifact. These scripts took a MANDATORY argv[1]
+    # naming a stats file that was never committed, built from a memento dir in
+    # /tmp. /tmp was cleared, so four published figures could not be rebuilt by
+    # anyone -- and plateaudit/determinism could not run them either.
+    src = (sys.argv[1] if len(sys.argv) > 1 else
+           str(sorted((pathlib.Path(__file__).resolve().parents[1] / "public")
+                      .glob("backfill-*.json"))[-1]))
+    st = json.load(open(src))
     dist = {int(k): v for k, v in st["events_per_area"].items()}
     areas = sum(dist.values())
     repeat = sum(v for k, v in dist.items() if k > 1)

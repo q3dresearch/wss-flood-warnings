@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Gap between consecutive archived captures, against the publisher's deletion window."""
 import json, math, pathlib, sys
+import pathlib
 import plate
 from plate import INK, INK2, MUTED, RULE, GRID, FAINT
 
@@ -46,7 +47,14 @@ def beeswarm(xs, top, bot):
 
 def main():
     here = pathlib.Path(__file__).resolve()
-    stats = json.load(open(sys.argv[1]))
+    # Defaults to the committed artifact. These scripts took a MANDATORY argv[1]
+    # naming a stats file that was never committed, built from a memento dir in
+    # /tmp. /tmp was cleared, so four published figures could not be rebuilt by
+    # anyone -- and plateaudit/determinism could not run them either.
+    src = (sys.argv[1] if len(sys.argv) > 1 else
+           str(sorted((pathlib.Path(__file__).resolve().parents[1] / "public")
+                      .glob("backfill-*.json"))[-1]))
+    stats = json.load(open(src))
     gaps = sorted(stats["gaps_h"])
     n = len(gaps)
     within = sum(1 for g in gaps if g <= 24)
