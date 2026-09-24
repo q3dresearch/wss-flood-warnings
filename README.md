@@ -65,6 +65,11 @@ questions this data is for cannot be answered from the archive at all.
 
 ## Questions this exists to answer
 
+![4 of 7 questions are answered now; 1 wait on the capture; 2 are not on a clock at all.](examples/charts/maturity.svg)
+
+**4 of these 7 are answered from captures already held.** 1 become answerable only as the series lengthens — the plate shows when. The remaining 2 are not on a clock: they need a method, or a field this source does not publish, and waiting produces neither. That distinction is the one a reader cannot make from a table of open questions.
+
+
 | # | Question | Status |
 | --- | --- | --- |
 | Q1 | Does the Internet Archive already track this register? | **answered — no.** Median gap between captures is 743 h against a 24 h deletion window; 3 of 54 gaps fall inside it — and one of those 3 is **11 seconds**, a double-capture rather than a second look at the register |
