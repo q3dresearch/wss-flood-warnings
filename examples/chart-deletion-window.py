@@ -54,7 +54,7 @@ def main():
         size=10, fill=MUTED, chars=132, leading=13)
     s.append("</svg>")
 
-    out = here.parents[1] / "charts" / "deletion-window.svg"
+    out = here.parent / "charts" / "deletion-window.svg"
     out.write_text("\n".join(s), encoding="utf-8")
     print(f"  wrote {out.name}  ({twice}/{total} = {100*twice/total:.1f}%, {rows} rows)")
     return 0

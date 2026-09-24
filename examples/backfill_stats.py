@@ -17,7 +17,7 @@ from collections import Counter, defaultdict
 from datetime import datetime
 
 HERE = pathlib.Path(__file__).resolve()
-REPO = HERE.parents[3]
+REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "parsers"))
 sys.path.insert(0, str(REPO.parent / "wss-engine"))
 import floodwarning_v1 as P              # noqa: E402

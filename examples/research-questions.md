@@ -11,10 +11,10 @@ to answer.
 
 Every Internet Archive memento of `/flood-monitoring/id/floods` was fetched and parsed
 with **this repo's own parser**, `parsers/floodwarning_v1.py` — not a parallel one
-written to flatter the result. `artifacts/scripts/backfill_stats.py` reproduces it:
+written to flatter the result. `../backfill_stats.py` reproduces it:
 
 ```
-python3 artifacts/scripts/backfill_stats.py <memento-dir> --out stats.json
+python3 ../backfill_stats.py <memento-dir> --out stats.json
 ```
 
 **55 of 57 mementos parsed, spanning 3,482 days.** Two could not be refetched after
@@ -50,7 +50,7 @@ rather than merely possible.
 days** — against a deletion window the publisher documents as about 24 hours. Only **4 of
 54** gaps fall inside that window. The largest gap is 1,002 days.
 
-![coverage gap](artifacts/charts/coverage-gap.svg)
+![coverage gap](charts/coverage-gap.svg)
 
 *Falsifier: most gaps landing inside the 24-hour window. They do not.*
 
@@ -60,7 +60,7 @@ days** — against a deletion window the publisher documents as about 24 hours. 
 the window needs the *same* warning observed at severityLevel 4 in at least two captures.
 Across ten years that happened for **46 of 860** stood-down warnings — **5.3%**.
 
-![deletion window](artifacts/charts/deletion-window.svg)
+![deletion window](charts/deletion-window.svg)
 
 For the other 814, all that is known is that the warning stood down somewhere between one
 capture and the next, and the median gap is 31 days. **Hourly capture answers this
@@ -75,7 +75,7 @@ in [queries.sql](queries.sql).
 **524 of 1,156** areas (45%) show more than one distinct event, counted by a change of
 warning number at the same `floodAreaID`. One area appears in 12 separate events.
 
-![repeat flooding](artifacts/charts/repeat-flooding.svg)
+![repeat flooding](charts/repeat-flooding.svg)
 
 Read this as a **floor with a known bias**: 42 of 55 mementos fall in 2017–19, so the
 repeat structure is measured mostly on those years, and every event between captures is
@@ -88,7 +88,7 @@ invisible. The real figure is higher and this sample cannot say by how much.
 **No.** Across 55 captures the register held anywhere from **0 to 760** warnings, median
 **6**. Eight captures found it completely empty.
 
-![register volatility](artifacts/charts/register-volatility.svg)
+![register volatility](charts/register-volatility.svg)
 
 Those eight zeros are a **measured national all-clear, not a failed fetch** — which is
 why nothing in the registry's gates may require a flood field to be present, and why

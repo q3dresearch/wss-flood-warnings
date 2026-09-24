@@ -78,7 +78,7 @@ def main():
         size=10, fill=MUTED, chars=132, leading=13)
     s.append("</svg>")
 
-    out = here.parents[1] / "charts" / "register-volatility.svg"
+    out = here.parent / "charts" / "register-volatility.svg"
     out.write_text("\n".join(s), encoding="utf-8")
     print(f"  wrote {out.name}  ({len(caps)} captures, {zeros} zeros, max {mx}, median {med})")
     return 0

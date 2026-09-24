@@ -23,7 +23,7 @@ and last changed. The agency documents its own deletion — a warning is set to
 severity 4, *"Warning no Longer in Force"*, about 24 hours after it is raised, and
 then **"the warning response is removed altogether"**.
 
-![The archive samples this register every 31 days. It deletes every 24 hours.](examples/artifacts/charts/coverage-gap.svg)
+![The archive samples this register every 31 days. It deletes every 24 hours.](examples/charts/coverage-gap.svg)
 
 **Nobody else is holding this.** The Internet Archive has 57 captures of the
 warnings endpoint across 2017–2026 — one per 61 days against a 24-hour turnover,
@@ -81,7 +81,7 @@ questions this data is for cannot be answered from the archive at all.
 start** — the backfill test, run against the archive's own 55 mementos using this
 repo's parser, asking whether this capture is needed at all.
 
-![Of 860 warnings seen standing down, 46 were seen there twice](examples/artifacts/charts/deletion-window.svg)
+![Of 860 warnings seen standing down, 46 were seen there twice](examples/charts/deletion-window.svg)
 
 **Q2, drawn.** One mark per warning observed at severityLevel 4. The window is
 bounded for the 46 in colour and unknown for the other 814.
@@ -97,7 +97,7 @@ duckdb -c "SELECT * FROM read_csv_auto('$B/2026-09.csv.gz') LIMIT 5"
 
 ```bash
 python examples/load_observations.py     # sqlite + the five queries in queries.sql
-python examples/artifacts/scripts/backfill_stats.py <memento-dir>
+python examples/backfill_stats.py <memento-dir>
 ```
 
 `entity_id` is the `floodAreaID` (e.g. `053WAF113LWA`) — the identifier that

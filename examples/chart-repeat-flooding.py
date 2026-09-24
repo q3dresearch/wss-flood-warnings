@@ -53,7 +53,7 @@ def main():
         size=10, fill=MUTED, chars=132, leading=13)
     s.append("</svg>")
 
-    out = here.parents[1] / "charts" / "repeat-flooding.svg"
+    out = here.parent / "charts" / "repeat-flooding.svg"
     out.write_text("\n".join(s), encoding="utf-8")
     print(f"  wrote {out.name}  ({repeat:,}/{areas:,} repeat, max {max(ks)} events)")
     return 0

@@ -100,7 +100,7 @@ def main():
         size=10, fill=MUTED, chars=132, leading=13)
     s.append("</svg>")
 
-    out = here.parents[1] / "charts" / "coverage-gap.svg"
+    out = here.parent / "charts" / "coverage-gap.svg"
     out.write_text("\n".join(s), encoding="utf-8")
     print(f"  wrote {out.name}  ({n} gaps, {within} inside, median {med:,.0f}h)")
     return 0
