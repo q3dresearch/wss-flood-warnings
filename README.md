@@ -158,6 +158,24 @@ All three candidate keys were checked on the 760-record storm payload before the
 parser was written: `floodAreaID`, `@id` and `(floodAreaID, timeRaised)` are each
 760 distinct over 760 rows.
 
+## Figures
+
+Built by the scripts in [`examples/`](examples/), from the captures in this
+repository. Each caption is the figure's own title — nothing is restated here
+that the figure does not already say.
+
+**The same register reads zero at 9 captures and 760 at another**
+
+![The same register reads zero at 9 captures and 760 at another](examples/charts/register-volatility.svg)
+
+Flood warnings in force at each of 55 archived captures, 2017-2026. One mark per capture. Vertical scale is log(1+n) so a true zero is drawn.
+
+**Even sampled once a month, 524 of 1,156 flood areas flooded more than once**
+
+![Even sampled once a month, 524 of 1,156 flood areas flooded more than once](examples/charts/repeat-flooding.svg)
+
+Distinct flood events per area, counted by a change of warning number at the same floodAreaID, across 55 archived captures 2017-2026.
+
 ## Licence
 
 The data is **Open Government Licence v3.0**, asserted by the publisher in
