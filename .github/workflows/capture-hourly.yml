@@ -16,7 +16,13 @@ name: capture-hourly
 
 on:
   schedule:
-    - cron: "25 * * * *" # off the hour -- GitHub's scheduler is contended at :00
+    # EVERY THREE HOURS, NOT EVERY HOUR. The carve-out that licenses sub-weekly
+    # capture here requires the interval to be SHORTER THAN THE PUBLISHER'S
+    # DELETION WINDOW, which the EA documents at ~24 hours. Three-hourly is 8x
+    # inside it, so the argument is untouched -- and hourly was costing 5 failures
+    # in 25 runs, every one of them throttled_status_503 from the EA. Asking three
+    # times less often is the cheapest way to stop being told no.
+    - cron: "25 */3 * * *" # off the hour -- GitHub's scheduler is contended at :00
   workflow_dispatch:
 
 permissions:
@@ -34,7 +40,7 @@ env:
   # MUST match the registry's `cadence:`. A mismatch makes `wss plan` return []
   # and the capture silently does nothing while the workflow stays green.
   CADENCE: hourly
-  ENGINE_SPEC: "wss[object] @ git+https://github.com/${{ github.repository_owner }}/wss-engine.git@v0.6.56"
+  ENGINE_SPEC: "wss[object] @ git+https://github.com/${{ github.repository_owner }}/wss-engine.git@v0.6.58"
 
 jobs:
   capture:

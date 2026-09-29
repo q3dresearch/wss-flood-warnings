@@ -6,4 +6,4 @@
 # version whose CADENCE_HOURS contains "hourly", and this repo's only source
 # declares it. Any earlier engine rejects registry/ea.flood.warnings.yml at
 # `wss validate` with "cadence must be one of weekly, monthly, quarterly".
-wss[object] @ git+https://github.com/q3dresearch/wss-engine.git@v0.6.56
+wss[object] @ git+https://github.com/q3dresearch/wss-engine.git@v0.6.58

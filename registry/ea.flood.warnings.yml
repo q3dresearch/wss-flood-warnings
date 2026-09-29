@@ -33,7 +33,7 @@ storage: git
 
 notes: >-
   Live UK flood alerts and warnings from the Environment Agency, captured
-  hourly because the publisher deletes them after about a day.
+  every three hours because the publisher deletes them after about a day.
 
   WHY THIS IS HOURLY AND ALMOST NOTHING ELSE IS. The fleet's floor is weekly
   and the engine enforced it until 2026-09-23. It was relaxed for this source
@@ -42,7 +42,13 @@ notes: >-
   which is shorter than the sampling interval by a factor of seven. A weekly
   reading of a register that empties daily is not a coarse sample, it is a
   lottery -- it would catch roughly one flood event in seven and report success
-  on the other six. Compare wss-gho or wss-carbon-registry, where a state
+  on the other six.
+
+  THE INTERVAL IS THREE HOURS, NOT ONE, SINCE 2026-09-29. What the argument
+  above requires is an interval shorter than the deletion window, and three
+  hours is eight times inside it. Hourly was returning throttled_status_503
+  from the EA on 5 of 25 runs; the deletion-window case never asked for the
+  fastest interval that fits, only for one that does. Compare wss-gho or wss-carbon-registry, where a state
   persists for months and weekly buys nothing over monthly.
 
   THE CENTRAL QUESTION, WHICH NOBODY CAN CURRENTLY ANSWER. This register is
