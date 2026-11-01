@@ -1,0 +1,2 @@
+source_id,url,fetched_at,http_status,content_type,content_length,content_sha256,etag,last_modified,outcome,raw_ref,reason,warnings
+ea.flood.warnings,https://environment.data.gov.uk/flood-monitoring/id/floods,2026-11-01T00:11:37Z,200,application/json,1890,2fb6d1341e166e7f5200fcd1892282de76084cc3a7baa55a42c5b65745c4e457,,"Sun, 01 Nov 2026 00:03:11 GMT",unchanged,raw/ea.flood.warnings/2026/10/20261031T192230Z-2fb6d1341e16.json.gz,,
